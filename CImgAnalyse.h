@@ -42,9 +42,10 @@ protected:
 
 	virtual int		fillNotes(void);
 	virtual int		searchNum(int nX, int nY, int nW, Rect * pRect);
-	virtual int		FillNumPos(void);
+	virtual int		fillNumPos(void);
 
 	virtual int		fillNoteInfo(void);
+	virtual int		getNearDotNum(int nX, int nY);
 
 	virtual int		detectNum(Rect * pRect);
 

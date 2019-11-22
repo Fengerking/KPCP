@@ -64,8 +64,6 @@ void CWndResult::UpdateResult(void) {
 		MoveToEx(m_hBmpDC, pLine->m_nLeft, pLine->m_nTop, NULL);
 		LineTo(m_hBmpDC, pLine->m_nLeft, pLine->m_nTop + pLine->m_nHeight);
 	}
-	SelectObject(m_hBmpDC, hPenOld);
-	DeleteObject(hPen);
 
 	int nFontH = 22;
 	MusicNote * pNote = m_pMusicPage->m_lstNote.GetHead();
@@ -79,15 +77,44 @@ void CWndResult::UpdateResult(void) {
 	SetBkMode(m_hBmpDC, TRANSPARENT);
 	RECT	rcText;
 	char	szText[2];
+	int		nX, nY;
 	pos = m_pMusicPage->m_lstNote.GetHeadPosition();
 	while (pos != NULL) {
 		pNote = m_pMusicPage->m_lstNote.GetNext(pos);
 		szText[0] = pNote->m_nNote + 0X30;
 		SetRect(&rcText, pNote->m_nLeft - 4, pNote->m_nTop - 4, pNote->m_nLeft + pNote->m_nWidth + 8, pNote->m_nTop + pNote->m_nHeight + 8);
 		DrawText(m_hBmpDC, szText, 1, &rcText, 0);
+
+		if (pNote->m_nHighLevel > 0) {
+			int nDotX = pNote->m_nLeft + pNote->m_nWidth / 2 - 1;
+			int nDotY = pNote->m_nTop - (pNote->m_nTop - pNote->m_pLine->m_nTop) / 2;
+			MoveToEx(m_hBmpDC, nDotX, nDotY, NULL);
+			LineTo(m_hBmpDC, nDotX + 1, nDotY);
+			LineTo(m_hBmpDC, nDotX + 1, nDotY + 1);
+			LineTo(m_hBmpDC, nDotX, nDotY + 1);
+			LineTo(m_hBmpDC, nDotX, nDotY);
+		}
+
+		if (pNote->m_nLength < 0) {
+			int nW = pNote->m_nLeft + pNote->m_nWidth + 4;
+			nX = pNote->m_nLeft - 6;
+			nY = pNote->m_nTop + pNote->m_nHeight;
+			nY = nY + ((pNote->m_pLine->m_nTop + pNote->m_pLine->m_nHeight) - nY) / 2;
+			MoveToEx(m_hBmpDC, nX, nY, NULL);
+			LineTo(m_hBmpDC, nW , nY);
+
+			if (pNote->m_nLength < -1) {
+				nY = pNote->m_nTop + pNote->m_nHeight;
+				nY = nY + ((pNote->m_pLine->m_nTop + pNote->m_pLine->m_nHeight) - nY);
+				MoveToEx(m_hBmpDC, nX, nY, NULL);
+				LineTo(m_hBmpDC, nW, nY);
+			}
+		}
 	}
 	SelectObject(m_hBmpDC, hFontOld);
 	DeleteObject(hFont);
+	SelectObject(m_hBmpDC, hPenOld);
+	DeleteObject(hPen);
 }
 
 LRESULT CWndResult::OnReceiveMessage (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {

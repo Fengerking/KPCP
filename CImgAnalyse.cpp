@@ -68,6 +68,29 @@ int	CImgAnalyse::OpenFile(char * pFile) {
 
 	fillNoteInfo();
 
+	MusicNote * pNote = NULL;
+	int nTop = 0;
+	int nMaxW = 0;
+	int nMaxH = 0;
+	NODEPOS pos = m_pMusicPage->m_lstNote.GetHeadPosition();
+	while (pos != NULL) {
+		pNote = m_pMusicPage->m_lstNote.GetNext(pos);
+		if (nMaxW < pNote->m_nWidth)
+			nMaxW = pNote->m_nWidth;
+		if (nMaxH < pNote->m_nHeight)
+			nMaxH = pNote->m_nHeight;
+	}
+	pos = m_pMusicPage->m_lstNote.GetHeadPosition();
+	while (pos != NULL) {
+		pNote = m_pMusicPage->m_lstNote.GetNext(pos);
+		if (nTop == 0)
+			nTop = pNote->m_nTop;
+		if (pNote->m_nTop - nTop > pNote->m_nHeight)
+			nTop = pNote->m_nTop;
+		pNote->m_nTop = nTop;
+		pNote->m_nHeight = nMaxH;
+	}
+
 	return 0;
 }
 
@@ -220,6 +243,7 @@ int	CImgAnalyse::fillNotes(void) {
 				pNote->m_nTop = rcNum.y;
 				pNote->m_nWidth = rcNum.width;
 				pNote->m_nHeight = rcNum.height;
+				pNote->m_bPlaying = false;
 				pNote->m_pLine = pLine;
 				m_pMusicPage->m_lstNote.AddTail(pNote);
 
@@ -233,17 +257,6 @@ int	CImgAnalyse::fillNotes(void) {
 		}
 
 		pPrev = pLine;
-	}
-
-	int nTop = 0;
-	pos = m_pMusicPage->m_lstNote.GetHeadPosition();
-	while (pos != NULL) {
-		pNote = m_pMusicPage->m_lstNote.GetNext(pos);
-		if (nTop == 0)
-			nTop = pNote->m_nTop;
-		if (pNote->m_nTop - nTop > pNote->m_nHeight)
-			nTop = pNote->m_nTop;
-		pNote->m_nTop = nTop;
 	}
 
 	return 0;
@@ -263,7 +276,7 @@ int	CImgAnalyse::searchNum(int nX, int nY, int nW, Rect * pRect) {
 			memset(&m_aFillResult[0][0], 0, sizeof(m_aFillResult));
 			m_aFillResult[m_nCheckIndex][0] = w;
 			m_aFillResult[m_nCheckIndex][1] = nY;
-			FillNumPos();
+			fillNumPos();
 			break;
 		}
 	}
@@ -287,7 +300,7 @@ int	CImgAnalyse::searchNum(int nX, int nY, int nW, Rect * pRect) {
 	return 1;
 }
 
-int	CImgAnalyse::FillNumPos(void) {
+int	CImgAnalyse::fillNumPos(void) {
 	int nX = m_aFillResult[m_nCheckIndex][0];
 	int nY = m_aFillResult[m_nCheckIndex][1];
 
@@ -311,7 +324,7 @@ int	CImgAnalyse::FillNumPos(void) {
 	}
 	if (nFill > 0 || m_nCheckIndex + 1 < m_nFillIndex) {
 		m_nCheckIndex++;
-		FillNumPos();
+		fillNumPos();
 	}
 	return 0;
 }
@@ -337,10 +350,82 @@ int	CImgAnalyse::detectNum(Rect * pRect) {
 }
 
 int	CImgAnalyse::fillNoteInfo(void) {
+	int			nX = 0, nY = 0;
+	int			nW = 0, nH = 0;
+	int			w = 0, h = 0;
+	int			nTotal = 0;
+	uchar *		pBuff = m_matImg.data;
 	MusicNote * pNote = NULL;
 	NODEPOS pos = m_pMusicPage->m_lstNote.GetHeadPosition();
 	while (pos != NULL) {
 		pNote = m_pMusicPage->m_lstNote.GetNext(pos);
+
+		// top 
+		nX = pNote->m_nLeft;
+		nW = pNote->m_nLeft + pNote->m_nWidth;
+		nY = pNote->m_pLine->m_nTop;
+		nH = pNote->m_nTop + 2;
+		for (h = nY; h < nH; h++) {
+			nTotal = 0;
+			pBuff = m_matImg.data + h * m_nWidth + nX;
+			for (w = nX; w < nW; w++) {
+				nTotal += *(pBuff++);
+			}
+			// has dot?
+			if (nTotal >= 255) {
+				for (w = nX; w < nW; w++) {
+					pBuff = m_matImg.data + h * m_nWidth + w;
+					if (*pBuff > m_nBValue) {
+						int nNearDots = getNearDotNum(w, h);
+						if (nNearDots > 2 && nNearDots < 9) {
+							pNote->m_nHighLevel = 1;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// bottom 
+		nX = pNote->m_nLeft;
+		nW = pNote->m_nLeft + pNote->m_nWidth;
+		nY = pNote->m_nTop + pNote->m_nHeight + 1;
+		nH = pNote->m_pLine->m_nTop + pNote->m_pLine->m_nHeight;
+		for (h = nY; h < nH; h++) {
+			nTotal = 0;
+			pBuff = m_matImg.data + h * m_nWidth + nX;
+			for (w = nX; w < nW; w++) {
+				nTotal += *(pBuff++);
+			}
+			// has under line?
+			if (nTotal > 255 * (nW - nX) * 8 / 10) {
+				pNote->m_nLength -= 1;
+
+				// next line
+				while (++h < nH) {
+					nTotal = 0;
+					pBuff = m_matImg.data + h * m_nWidth + nX;
+					for (w = nX; w < nW; w++) {
+						nTotal += *(pBuff++);
+					}
+					if (nTotal < 255 * (nW - nX) * 7 / 10)
+						break;
+				}
+			}
+			else if (nTotal > 255) {
+				//pNote->m_nHighLevel = 1;
+			}
+		}
 	}
 	return 0;
+}
+
+int	CImgAnalyse::getNearDotNum(int nX, int nY) {
+	m_nCheckIndex = 0;
+	m_nFillIndex = 1;
+	memset(&m_aFillResult[0][0], 0, sizeof(m_aFillResult));
+	m_aFillResult[m_nCheckIndex][0] = nX;
+	m_aFillResult[m_nCheckIndex][1] = nY;
+	fillNumPos();
+	return m_nFillIndex;
 }

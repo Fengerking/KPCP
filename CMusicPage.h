@@ -33,6 +33,8 @@ struct MusicNote {
 	int		m_nWidth;
 	int		m_nHeight;
 
+	bool	m_bPlaying;
+
 	MusicLine * m_pLine;
 };
 
