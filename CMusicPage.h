@@ -32,6 +32,8 @@ struct MusicNote {
 	int		m_nTop;
 	int		m_nWidth;
 	int		m_nHeight;
+
+	MusicLine * m_pLine;
 };
 
 class CMusicPage

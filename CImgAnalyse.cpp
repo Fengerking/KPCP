@@ -60,18 +60,13 @@ int	CImgAnalyse::OpenFile(char * pFile) {
 				m_matImg.at<uchar>(i, j) = 255;
 		}
 	}
-	//imshow("show", m_matImg);
-
-	//blur(m_matImg, m_matImg, Size(m_matImg.cols, m_matImg.rows));
-
-	//Canny(m_matImg, m_matCanny, 0, 100);
-	//imwrite("c:\\temp\\000.jpg", m_matCanny);
-	//imshow("Canny Image", m_matCanny);
 
 	if (fillLines() < 0)
 		return -1;
+
 	fillNotes();
 
+	fillNoteInfo();
 
 	return 0;
 }
@@ -225,6 +220,7 @@ int	CImgAnalyse::fillNotes(void) {
 				pNote->m_nTop = rcNum.y;
 				pNote->m_nWidth = rcNum.width;
 				pNote->m_nHeight = rcNum.height;
+				pNote->m_pLine = pLine;
 				m_pMusicPage->m_lstNote.AddTail(pNote);
 
 				//Mat matNum = m_matImg(rcImg);
@@ -338,4 +334,13 @@ int	CImgAnalyse::detectNum(Rect * pRect) {
 	normalize(matNum, matNum, 1., 0., cv::NormTypes::NORM_MINMAX, CV_32FC1);
 	int nNum = (int)m_knnModel->predict(matNum.reshape(0, 1));
 	return nNum;
+}
+
+int	CImgAnalyse::fillNoteInfo(void) {
+	MusicNote * pNote = NULL;
+	NODEPOS pos = m_pMusicPage->m_lstNote.GetHeadPosition();
+	while (pos != NULL) {
+		pNote = m_pMusicPage->m_lstNote.GetNext(pos);
+	}
+	return 0;
 }

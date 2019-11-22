@@ -44,6 +44,8 @@ protected:
 	virtual int		searchNum(int nX, int nY, int nW, Rect * pRect);
 	virtual int		FillNumPos(void);
 
+	virtual int		fillNoteInfo(void);
+
 	virtual int		detectNum(Rect * pRect);
 
 protected:
