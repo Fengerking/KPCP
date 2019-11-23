@@ -18,7 +18,6 @@ using namespace cv::ml;
 using namespace std;
 
 #define PI 3.1415926
-int g_aNearPos[8][2] = { {-1, 0}, {-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1} };
 
 CImgAnalyse::CImgAnalyse(HWND hWnd) {
 	m_hWnd = hWnd;
@@ -60,6 +59,7 @@ int	CImgAnalyse::OpenFile(char * pFile) {
 				m_matImg.at<uchar>(i, j) = 255;
 		}
 	}
+	m_pMusicPage->ParseObject(m_matImg.data);
 
 	if (fillLines() < 0)
 		return -1;

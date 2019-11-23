@@ -35,6 +35,29 @@ void CWndResult::UpdateResult(void) {
 		return;
 	int nW = m_pMusicPage->m_nWidth;
 	int nH = m_pMusicPage->m_nHeight;
+
+	unsigned char * pData = new unsigned char[nW * nH * 4];
+	memset(pData, 168, nW * nH * 4);
+	CImgObject *	pObj = NULL;
+	PixPoint *		pPix = NULL;
+	NODEPOS posObj = m_pMusicPage->m_lstObject.GetHeadPosition();
+	while (posObj != NULL) {
+		pObj = m_pMusicPage->m_lstObject.GetNext(posObj);
+		if (pObj->m_lstPixel.GetCount() < 30)
+			continue;
+		NODEPOS posPix = pObj->m_lstPixel.GetHeadPosition();
+		while (posPix != NULL) {
+			pPix = pObj->m_lstPixel.GetNext(posPix);
+			*((int *)(pData + pPix->nY * nW * 4 + pPix->nX * 4)) = 0;
+		}
+		//break;
+	}
+	m_hBitmap = CreateBitmap(nW, nH, 1, 32, pData);
+	m_hBmpOld = (HBITMAP)SelectObject(m_hBmpDC, m_hBitmap);
+	delete[]pData;
+	return;
+
+
 	if (m_hBitmap != NULL) {
 		BITMAP bmpInfo;
 		GetObject(m_hBitmap, sizeof(BITMAP), &bmpInfo);
