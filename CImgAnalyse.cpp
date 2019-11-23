@@ -354,6 +354,7 @@ int	CImgAnalyse::fillNoteInfo(void) {
 	int			nW = 0, nH = 0;
 	int			w = 0, h = 0;
 	int			nTotal = 0;
+	int			nFoundX, nFoundY;
 	uchar *		pBuff = m_matImg.data;
 	MusicNote * pNote = NULL;
 	NODEPOS pos = m_pMusicPage->m_lstNote.GetHeadPosition();
@@ -365,6 +366,8 @@ int	CImgAnalyse::fillNoteInfo(void) {
 		nW = pNote->m_nLeft + pNote->m_nWidth;
 		nY = pNote->m_pLine->m_nTop;
 		nH = pNote->m_nTop + 2;
+		nFoundX = 0;
+		nFoundY = 0;
 		for (h = nY; h < nH; h++) {
 			nTotal = 0;
 			pBuff = m_matImg.data + h * m_nWidth + nX;
@@ -373,13 +376,21 @@ int	CImgAnalyse::fillNoteInfo(void) {
 			}
 			// has dot?
 			if (nTotal >= 255) {
+				if (h == nFoundY + 1)
+					continue;
 				for (w = nX; w < nW; w++) {
 					pBuff = m_matImg.data + h * m_nWidth + w;
 					if (*pBuff > m_nBValue) {
 						int nNearDots = getNearDotNum(w, h);
 						if (nNearDots > 2 && nNearDots < 9) {
-							pNote->m_nHighLevel = 1;
-							break;
+							pNote->m_nHighLevel += 1;
+							nFoundY = h;
+						}
+						while (*pBuff > m_nBValue) {
+							w++;
+							if (w >= nW)
+								break;
+							pBuff = m_matImg.data + h * m_nWidth + w;
 						}
 					}
 				}
@@ -391,6 +402,7 @@ int	CImgAnalyse::fillNoteInfo(void) {
 		nW = pNote->m_nLeft + pNote->m_nWidth;
 		nY = pNote->m_nTop + pNote->m_nHeight + 1;
 		nH = pNote->m_pLine->m_nTop + pNote->m_pLine->m_nHeight;
+		nFoundX = 0; nFoundY = 0;
 		for (h = nY; h < nH; h++) {
 			nTotal = 0;
 			pBuff = m_matImg.data + h * m_nWidth + nX;
@@ -413,7 +425,80 @@ int	CImgAnalyse::fillNoteInfo(void) {
 				}
 			}
 			else if (nTotal > 255) {
-				//pNote->m_nHighLevel = 1;
+				if (h == nFoundY + 1)
+					continue;
+				for (w = nX; w < nW; w++) {
+					pBuff = m_matImg.data + h * m_nWidth + w;
+					if (*pBuff > m_nBValue) {
+						int nNearDots = getNearDotNum(w, h);
+						if (nNearDots > 2 && nNearDots < 9) {
+							pNote->m_nHighLevel -= 1;
+							nFoundY = h;
+						}
+						while (*pBuff > m_nBValue) {
+							w++;
+							if (w >= nW)
+								break;
+							pBuff = m_matImg.data + h * m_nWidth + w;
+						}
+					}
+				}
+			}
+		}
+
+		// right
+		nX = pNote->m_nLeft + pNote->m_nWidth;
+		nW = m_pMusicPage->GetRightWidth (pNote);
+		nY = pNote->m_nTop;
+		nH = pNote->m_nTop + pNote->m_nHeight;
+		nFoundX = 0; nFoundY = 0;
+		for (h = nY; h < nH; h++) {
+			nTotal = 0;
+			pBuff = m_matImg.data + h * m_nWidth + nX;
+			for (w = nX; w < nW; w++) {
+				nTotal += *(pBuff++);
+			}
+			// has length line?
+			if (nTotal > 255 * pNote->m_nWidth * 3 / 4) {
+				pNote->m_nLength += 2;
+
+				w = nX;
+				while (w < nW) {
+					pBuff = m_matImg.data + h * m_nWidth + w++;
+					if (*pBuff > m_nBValue) {
+						pNote->m_nLength += 1;
+						while (w < nW) {
+							pBuff = m_matImg.data + h * m_nWidth + w++;
+							if (*pBuff < m_nBValue) {
+								break;
+							}
+						}
+					}
+				}
+
+				// next line
+				while (++h < nH) {
+					nTotal = 0;
+					pBuff = m_matImg.data + h * m_nWidth + nX;
+					for (w = nX; w < nW; w++) {
+						nTotal += *(pBuff++);
+					}
+					if (nTotal < 255 * pNote->m_nWidth / 2)
+						break;
+				}
+			}
+			else if (nTotal > 255) {
+				for (w = nX; w < nW; w++) {
+					pBuff = m_matImg.data + h * m_nWidth + w;
+					if (*pBuff > m_nBValue) {
+						int nNearDots = getNearDotNum(w, h);
+						if (nNearDots > 2 && nNearDots < 9) {
+							pNote->m_nLength += 1;
+							break;
+						}
+					}
+				}
+				break;
 			}
 		}
 	}

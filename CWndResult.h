@@ -25,6 +25,7 @@ public:
 	virtual void	UpdateResult(void);
 
 protected:
+	virtual void	drawDot(int nDotX, int nDotY);
 
 
 };

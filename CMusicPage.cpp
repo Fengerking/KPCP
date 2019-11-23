@@ -22,3 +22,35 @@ CMusicPage::CMusicPage(void) {
 CMusicPage::~CMusicPage(void) {
 
 }
+
+
+int	CMusicPage::GetRightWidth(MusicNote * pLeft) {
+	int		nRightWidth = 0;
+	int		nNoteWidth = pLeft->m_nWidth;
+	MusicNote * pNote = NULL;
+	NODEPOS pos = m_lstNote.GetHeadPosition();
+	while (pos != NULL) {
+		pNote = m_lstNote.GetNext(pos);
+		if (pNote == pLeft) {
+			pNote = m_lstNote.GetNext(pos);
+			if (pNote == NULL) {
+				nRightWidth = pLeft->m_pLine->m_nLeft;
+			}
+			else {
+				if (pNote->m_pLine == pLeft->m_pLine) {
+					nRightWidth = pNote->m_nLeft;
+				}
+				else {
+					nRightWidth = pLeft->m_pLine->m_nLeft;
+				}
+			}
+			break;
+		}
+	}
+	if (nRightWidth < nNoteWidth * 2)
+		return nRightWidth - 2;
+	else if (nRightWidth < nNoteWidth * 4)
+		return nRightWidth - 6;
+	else
+		return nRightWidth - 10;
+}

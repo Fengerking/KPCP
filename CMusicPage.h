@@ -44,7 +44,8 @@ public:
 	CMusicPage(void);
 	virtual ~CMusicPage(void);
 
-	virtual void		SetSize(int nW, int nH) { m_nWidth = nW; m_nHeight = nH; }
+	virtual void	SetSize(int nW, int nH) { m_nWidth = nW; m_nHeight = nH; }
+	virtual int		GetRightWidth(MusicNote * pLeft);
 
 public:
 	CObjectList<MusicLine>	m_lstLine;

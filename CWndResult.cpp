@@ -88,26 +88,64 @@ void CWndResult::UpdateResult(void) {
 		if (pNote->m_nHighLevel > 0) {
 			int nDotX = pNote->m_nLeft + pNote->m_nWidth / 2 - 1;
 			int nDotY = pNote->m_nTop - (pNote->m_nTop - pNote->m_pLine->m_nTop) / 2;
-			MoveToEx(m_hBmpDC, nDotX, nDotY, NULL);
-			LineTo(m_hBmpDC, nDotX + 1, nDotY);
-			LineTo(m_hBmpDC, nDotX + 1, nDotY + 1);
-			LineTo(m_hBmpDC, nDotX, nDotY + 1);
-			LineTo(m_hBmpDC, nDotX, nDotY);
+			if (pNote->m_nHighLevel == 2) {
+				nDotX = nDotX - 3;
+			}
+			drawDot(nDotX, nDotY);
+			if (pNote->m_nHighLevel == 2) {
+				nDotX = nDotX + 6;
+				drawDot(nDotX, nDotY);
+			}
 		}
 
+		int nW = pNote->m_nLeft + pNote->m_nWidth + 2;
+		int nH = (pNote->m_pLine->m_nTop + pNote->m_pLine->m_nHeight) - (pNote->m_nTop + pNote->m_nHeight);
 		if (pNote->m_nLength < 0) {
-			int nW = pNote->m_nLeft + pNote->m_nWidth + 4;
 			nX = pNote->m_nLeft - 6;
-			nY = pNote->m_nTop + pNote->m_nHeight;
-			nY = nY + ((pNote->m_pLine->m_nTop + pNote->m_pLine->m_nHeight) - nY) / 2;
+			nY = pNote->m_nTop + pNote->m_nHeight + nH / 2;
 			MoveToEx(m_hBmpDC, nX, nY, NULL);
 			LineTo(m_hBmpDC, nW , nY);
 
-			if (pNote->m_nLength < -1) {
-				nY = pNote->m_nTop + pNote->m_nHeight;
-				nY = nY + ((pNote->m_pLine->m_nTop + pNote->m_pLine->m_nHeight) - nY);
+			if (pNote->m_nLength <= -2) {
+				nY = nY + nH / 2;
 				MoveToEx(m_hBmpDC, nX, nY, NULL);
 				LineTo(m_hBmpDC, nW, nY);
+			}
+			if (pNote->m_nLength <= -3) {
+				nY = nY + nH / 2;
+				MoveToEx(m_hBmpDC, nX, nY, NULL);
+				LineTo(m_hBmpDC, nW, nY);
+			}
+		}
+		if (pNote->m_nHighLevel < 0) {
+			int nDotX = pNote->m_nLeft + pNote->m_nWidth / 2 - 3;
+			int nDotY = nY + nH / 2;
+			if (pNote->m_nHighLevel == 2) {
+				nDotX = nDotX - 3;
+			}
+			drawDot(nDotX, nDotY);
+			if (pNote->m_nHighLevel == 2) {
+				nDotX = nDotX + 6;
+				drawDot(nDotX, nDotY);
+			}
+		}
+
+		if (pNote->m_nLength == 1) {
+			int nDotX = pNote->m_nLeft + pNote->m_nWidth + 2;
+			int nDotY = pNote->m_nTop + pNote->m_nHeight - 2;
+			drawDot(nDotX, nDotY);
+		}
+		if (pNote->m_nLength >= 2) {
+			nX = pNote->m_nLeft + pNote->m_nWidth + 2;
+			int nRStep = pNote->m_nWidth * 3 / 2;
+			nW = nX + nRStep;
+			nY = pNote->m_nTop + pNote->m_nHeight * 2 / 3;
+			for (int i = 2; i <= pNote->m_nLength; i += 2) {
+				MoveToEx(m_hBmpDC, nX, nY, NULL);
+				LineTo(m_hBmpDC, nW, nY);
+
+				nX = nW + 2;
+				nW = nW + nRStep;
 			}
 		}
 	}
@@ -115,6 +153,14 @@ void CWndResult::UpdateResult(void) {
 	DeleteObject(hFont);
 	SelectObject(m_hBmpDC, hPenOld);
 	DeleteObject(hPen);
+}
+
+void CWndResult::drawDot(int nDotX, int nDotY) {
+	MoveToEx(m_hBmpDC, nDotX, nDotY, NULL);
+	LineTo(m_hBmpDC, nDotX + 1, nDotY);
+	LineTo(m_hBmpDC, nDotX + 1, nDotY + 1);
+	LineTo(m_hBmpDC, nDotX, nDotY + 1);
+	LineTo(m_hBmpDC, nDotX, nDotY);
 }
 
 LRESULT CWndResult::OnReceiveMessage (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
