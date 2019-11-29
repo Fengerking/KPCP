@@ -13,6 +13,7 @@
 #include "tchar.h"
 
 #include "CWndResult.h"
+#include "CCheckSelectResult.h"
 
 CWndResult::CWndResult(HINSTANCE hInst)
 	: CWndBase (hInst)
@@ -31,31 +32,47 @@ bool CWndResult::CreateWnd (HWND hParent, RECT rcView, COLORREF clrBG) {
 }
 
 void CWndResult::UpdateResult(void) {
-	if (m_pMusicPage->m_nWidth <= 0)
-		return;
 	int nW = m_pMusicPage->m_nWidth;
 	int nH = m_pMusicPage->m_nHeight;
+	//CCheckSelectResult checkSelect;
+	//checkSelect.OpenFile("c:/temp/checkResult/1574585752249.yuv");
+	//int width = 640;
+	//int height = 480;
+	//unsigned char * pBmpData = new unsigned char[width * height * 4];
+	//memset(pBmpData, 168, width * height * 4);
+	//m_hBitmap = CreateBitmap(width, height, 1, 32, pBmpData);
+	//m_hBmpOld = (HBITMAP)SelectObject(m_hBmpDC, m_hBitmap);
+	//HBRUSH hRCBrush = CreateSolidBrush(RGB(0, 0, 0));
+	//for (int i = 0; i < checkSelect.m_nFindLines; i++) {
+	//	FillRect(m_hBmpDC, (RECT *)&checkSelect.m_rcLines[i], hRCBrush);
+	//}
+	//DeleteObject(hRCBrush);
+	//return;
 
-	unsigned char * pData = new unsigned char[nW * nH * 4];
-	memset(pData, 168, nW * nH * 4);
-	CImgObject *	pObj = NULL;
-	PixPoint *		pPix = NULL;
-	NODEPOS posObj = m_pMusicPage->m_lstObject.GetHeadPosition();
-	while (posObj != NULL) {
-		pObj = m_pMusicPage->m_lstObject.GetNext(posObj);
-		if (pObj->m_lstPixel.GetCount() < 30)
-			continue;
-		NODEPOS posPix = pObj->m_lstPixel.GetHeadPosition();
-		while (posPix != NULL) {
-			pPix = pObj->m_lstPixel.GetNext(posPix);
-			*((int *)(pData + pPix->nY * nW * 4 + pPix->nX * 4)) = 0;
-		}
-		//break;
-	}
-	m_hBitmap = CreateBitmap(nW, nH, 1, 32, pData);
-	m_hBmpOld = (HBITMAP)SelectObject(m_hBmpDC, m_hBitmap);
-	delete[]pData;
-	return;
+	//if (m_pMusicPage->m_nWidth <= 0)
+	//	return;
+
+
+	//unsigned char * pData = new unsigned char[nW * nH * 4];
+	//memset(pData, 168, nW * nH * 4);
+	//CImgObject *	pObj = NULL;
+	//PixPoint *		pPix = NULL;
+	//NODEPOS posObj = m_pMusicPage->m_lstObject.GetHeadPosition();
+	//while (posObj != NULL) {
+	//	pObj = m_pMusicPage->m_lstObject.GetNext(posObj);
+	//	if (pObj->m_lstPixel.GetCount() < 30)
+	//		continue;
+	//	NODEPOS posPix = pObj->m_lstPixel.GetHeadPosition();
+	//	while (posPix != NULL) {
+	//		pPix = pObj->m_lstPixel.GetNext(posPix);
+	//		*((int *)(pData + pPix->nY * nW * 4 + pPix->nX * 4)) = 0;
+	//	}
+	//	//break;
+	//}
+	//m_hBitmap = CreateBitmap(nW, nH, 1, 32, pData);
+	//m_hBmpOld = (HBITMAP)SelectObject(m_hBmpDC, m_hBitmap);
+	//delete[]pData;
+	//return;
 
 
 	if (m_hBitmap != NULL) {

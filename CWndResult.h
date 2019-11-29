@@ -26,7 +26,5 @@ public:
 
 protected:
 	virtual void	drawDot(int nDotX, int nDotY);
-
-
 };
 #endif //__CWndResult_H__
