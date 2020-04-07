@@ -26,5 +26,8 @@ public:
 
 protected:
 	virtual void	drawDot(int nDotX, int nDotY);
+
+protected:
+	HBRUSH			m_hBrush;
 };
 #endif //__CWndResult_H__

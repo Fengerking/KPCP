@@ -10,6 +10,7 @@
 
 *******************************************************************************/
 #include "windows.h"
+#include "math.h"
 #include "tchar.h"
 
 #include "CMusicPlay.h"
@@ -22,6 +23,8 @@ CMusicPlay::CMusicPlay(void) {
 	m_nLowLen = m_nStep * 5;
 	m_nBuffSize = 4096;
 	m_hFile = fopen("./res/yinseku.pcm", "rb");
+	testNotePlay();
+
 	m_pRnd = new CWaveOutRnd();
 	m_pRnd->Init(44100, 2);
 	m_pRnd->Start();
@@ -38,48 +41,55 @@ void CMusicPlay::SetMusicPage(CMusicPage * pPage) {
 }
 
 int	CMusicPlay::Play(void) {
-	testNotePlay();
+	MusicNote * pNote = NULL;
+	NODEPOS		pos = m_pPage->m_lstNote.GetHeadPosition();
+	while (pos != NULL) {
+		pNote = m_pPage->m_lstNote.GetNext(pos);
+		PlayNote(pNote);
+	}
+	return 0;
+}
 
+int	CMusicPlay::PlayNote(MusicNote * pNote) {
 	int nRead = m_nBuffSize;
 	int nPlayLen = 0;
 	int nRC = 0;
 	int nOffset = 0;
 	int nLenght = 0;
-	MusicNote * pNote = NULL;
-	NODEPOS		pos = m_pPage->m_lstNote.GetHeadPosition();
-	while (pos != NULL) {
-		pNote = m_pPage->m_lstNote.GetNext(pos);
-		if (pNote->m_nHighLevel == 0) {
-			nOffset = m_aOffPos[5 + pNote->m_nNote - 1];
-		}
-		else if (pNote->m_nHighLevel == 1) {
-			nOffset = m_aOffPos[12];
-		}
-		else if (pNote->m_nHighLevel == -1) {
-			nOffset = m_aOffPos[pNote->m_nNote - 3];
-		}
-		else {
-			nOffset = m_aOffPos[5 + pNote->m_nNote - 1];
-		}
-		if (pNote->m_nNote == 0) {
-			nOffset = 0;
-		}
-		nLenght = m_nStep / (2 ^ (4 - pNote->m_nLength));
-		nLenght = nLenght * 4 / 4;
 
-		fseek(m_hFile, nOffset, SEEK_SET);
-		nPlayLen = 0;
-		while (nPlayLen < nLenght) {
-			nRead = fread(m_szBuff, 1, m_nBuffSize, m_hFile);
-			while (nRead > 0) {
-				nRC = m_pRnd->Render((unsigned char *)m_szBuff, nRead, 0);
-				if (nRC != 0) {
-					Sleep(2);
-				}
-				else {
-					nPlayLen += nRead;
-					break;
-				}
+	if (pNote->m_nHighLevel == 0) {
+		nOffset = m_aOffPos[5 + pNote->m_nNote - 1];
+	}
+	else if (pNote->m_nHighLevel == 1) {
+		nOffset = m_aOffPos[12];
+	}
+	else if (pNote->m_nHighLevel == -1) {
+		nOffset = m_aOffPos[pNote->m_nNote - 3];
+	}
+	else {
+		nOffset = m_aOffPos[5 + pNote->m_nNote - 1];
+	}
+	if (pNote->m_nNote == 0) {
+		nOffset = 0;
+	}
+	int nNum = pow(2, 4 - pNote->m_nLength);
+	nLenght = m_nStep * 4 / nNum;
+	nLenght = nLenght * 4 / 4;
+	if (nLenght > m_nStep)
+		nLenght = m_nStep;
+
+	fseek(m_hFile, nOffset, SEEK_SET);
+	nPlayLen = 0;
+	while (nPlayLen < nLenght) {
+		nRead = fread(m_szBuff, 1, m_nBuffSize, m_hFile);
+		while (nRead > 0) {
+			nRC = m_pRnd->Render((unsigned char *)m_szBuff, nRead, 0);
+			if (nRC != 0) {
+				Sleep(2);
+			}
+			else {
+				nPlayLen += nRead;
+				break;
 			}
 		}
 	}

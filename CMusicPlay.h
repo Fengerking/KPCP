@@ -30,6 +30,9 @@ public:
 	// 指定位置开始播放
 	virtual int		Seek(int nPos);
 
+	virtual int		PlayNote(MusicNote * pNote);
+
+
 	// 填充PCM数据
 	virtual int		FillPcmData(void);
 	// 利用教程渐变拼接数据

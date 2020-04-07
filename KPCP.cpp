@@ -24,6 +24,9 @@ CWndResult *	g_wndResult = NULL;
 CMusicPage 		g_musicPage;
 CMusicPlay *	g_pMusicPlay = NULL;
 
+NODEPOS			g_posNote = NULL;
+MusicNote *		g_musicNote = NULL;
+
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -141,7 +144,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	//g_pMusicPlay = new CMusicPlay();
 	//g_pMusicPlay->SetMusicPage(&g_musicPage);
 	//g_pMusicPlay->Play();
-
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -183,7 +185,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				g_pMusicPlay = new CMusicPlay();
 				g_pMusicPlay->SetMusicPage(&g_musicPage);
 			}
-			g_pMusicPlay->Play();
+			//g_pMusicPlay->Play();
+			g_posNote = g_musicPage.m_lstNote.GetHeadPosition();
+			SetTimer(hWnd, 1001, 10, NULL);
 			break;
 		}
 
@@ -192,6 +196,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         }
     }
     break;
+
+	case WM_TIMER: {
+		if (g_musicNote != NULL)
+			g_musicNote->m_bPlaying = false;
+
+		if (g_posNote == NULL) {
+			KillTimer(hWnd, 1001);
+		}
+		else {
+			MusicNote * pNote = g_musicPage.m_lstNote.GetNext(g_posNote);
+			pNote->m_bPlaying = true;
+			g_wndResult->UpdateResult();
+			g_pMusicPlay->PlayNote(pNote);
+			g_musicNote = pNote;
+		}
+		break;
+	}
+
     case WM_PAINT:  {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);

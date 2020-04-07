@@ -27,6 +27,7 @@ CWndResult::~CWndResult(void) {
 bool CWndResult::CreateWnd (HWND hParent, RECT rcView, COLORREF clrBG) {
 	if (!CWndBase::CreateWnd (hParent, rcView, clrBG))
 		return false;
+	m_hBrush = CreateSolidBrush(RGB(255, 0, 255));
 	return true;
 }
 
@@ -81,6 +82,13 @@ void CWndResult::UpdateResult(void) {
 		pNote = m_pMusicPage->m_lstNote.GetNext(pos);
 		szText[0] = pNote->m_nNote + 0X30;
 		SetRect(&rcText, pNote->m_nLeft - 4, pNote->m_nTop - 4, pNote->m_nLeft + pNote->m_nWidth + 8, pNote->m_nTop + pNote->m_nHeight + 8);
+		if (pNote->m_bPlaying) {
+			SetTextColor(m_hBmpDC, RGB(255, 0, 0));
+			FillRect(m_hBmpDC, &rcText, m_hBrush);
+		}
+		else {
+			SetTextColor(m_hBmpDC, RGB(0, 0, 0));
+		}
 		DrawText(m_hBmpDC, szText, 1, &rcText, 0);
 
 		if (pNote->m_nHighLevel > 0) {
