@@ -20,7 +20,9 @@ public:
 	CTrainNote(HWND hWnd);
 	virtual ~CTrainNote(void);
 
+	// 创建各种字体的数字图片，训练材料
 	virtual int		CreateNumPic(void);
+	// 用OpenCV KNN 算法训练数字识别模型
 	virtual int		TrainNotePic(void);
 
 	virtual int		createNumImage(LOGFONT *plf);

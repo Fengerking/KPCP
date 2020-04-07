@@ -129,7 +129,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>.\ext\opencv\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ade.lib;opencv_ts412.lib;opencv_world412.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ade.lib;opencv_ts412.lib;opencv_world412.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,11 +151,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CCheckSelectResult.h" />
     <ClInclude Include="CImgAnalyse.h" />
     <ClInclude Include="CMusicPage.h" />
+    <ClInclude Include="CMusicPlay.h" />
     <ClInclude Include="CNodeList.h" />
     <ClInclude Include="CTrainNote.h" />
+    <ClInclude Include="CWaveOutRnd.h" />
     <ClInclude Include="CWndBase.h" />
     <ClInclude Include="CWndResult.h" />
     <ClInclude Include="CWndSource.h" />
@@ -165,11 +166,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CCheckSelectResult.cpp" />
     <ClCompile Include="CImgAnalyse.cpp" />
     <ClCompile Include="CMusicPage.cpp" />
+    <ClCompile Include="CMusicPlay.cpp" />
     <ClCompile Include="CNodeList.cpp" />
     <ClCompile Include="CTrainNote.cpp" />
+    <ClCompile Include="CWaveOutRnd.cpp" />
     <ClCompile Include="CWndBase.cpp" />
     <ClCompile Include="CWndResult.cpp" />
     <ClCompile Include="CWndSource.cpp" />

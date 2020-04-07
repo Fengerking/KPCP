@@ -50,7 +50,7 @@ LRESULT CWndSource::OnReceiveMessage (HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 			BITMAP bmpInfo;
 			GetObject(m_hBitmap, sizeof (BITMAP), &bmpInfo);		
 			SetStretchBltMode(hdc, HALFTONE);
-			//StretchBlt(hdc, 0, 0, rcView.right, rcView.bottom, m_hBmpDC, 0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, SRCCOPY);
+			StretchBlt(hdc, 0, 0, rcView.right, rcView.bottom, m_hBmpDC, 0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, SRCCOPY);
 		}
 		EndPaint(hwnd, &ps);
 		return S_OK;// DefWindowProc(hwnd, uMsg, wParam, lParam);

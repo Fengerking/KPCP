@@ -10,6 +10,7 @@
 #include "CWndResult.h"
 #include "CMusicPage.h"
 #include "CTrainNote.h"
+#include "CMusicPlay.h"
 
 #define MAX_LOADSTRING 100
 
@@ -21,6 +22,7 @@ char		szWindowClass[MAX_LOADSTRING];				// the main window class name
 CWndSource *	g_wndSource = NULL;
 CWndResult *	g_wndResult = NULL;
 CMusicPage 		g_musicPage;
+CMusicPlay *	g_pMusicPlay = NULL;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -134,8 +136,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	g_wndResult->SetMusicPage(&g_musicPage);
 
 	char szFile[256];
-	strcpy(szFile, "c:/work/KPCP/res/001.jpg");
+	strcpy(szFile, "./res/001.jpg");
 	OpenNusicPageFile(hWnd, szFile);
+	//g_pMusicPlay = new CMusicPlay();
+	//g_pMusicPlay->SetMusicPage(&g_musicPage);
+	//g_pMusicPlay->Play();
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -170,6 +175,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		case ID_FILE_TRAIN: {
 			CTrainNote trainNote(hWnd);
 			trainNote.TrainNotePic();
+			break;
+		}
+
+		case ID_FILE_PLAY: {
+			if (g_pMusicPlay == NULL) {
+				g_pMusicPlay = new CMusicPlay();
+				g_pMusicPlay->SetMusicPage(&g_musicPage);
+			}
+			g_pMusicPlay->Play();
 			break;
 		}
 

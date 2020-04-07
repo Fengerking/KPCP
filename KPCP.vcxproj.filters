@@ -48,7 +48,10 @@
     <ClInclude Include="CTrainNote.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="CCheckSelectResult.h">
+    <ClInclude Include="CMusicPlay.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWaveOutRnd.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,7 +83,10 @@
     <ClCompile Include="CTrainNote.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CCheckSelectResult.cpp">
+    <ClCompile Include="CMusicPlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWaveOutRnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

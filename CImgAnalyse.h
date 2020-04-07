@@ -29,24 +29,30 @@ public:
 	CImgAnalyse(HWND hWnd);
 	virtual ~CImgAnalyse(void);
 
+	// 打开简谱图片文件
 	virtual int		OpenFile(char * pFile);
+	// 关闭文件
 	virtual int		CloseFile(void);
 
 	virtual void	SetMusicPage(CMusicPage * pMusicPage) { m_pMusicPage = pMusicPage; }
 
 protected:
+	// 查找简谱的分隔线
 	virtual int		fillLines(void);
 	virtual int		searchLine(int nX, int nY, bool bRow, int & nLineH, int & nSX, int & nSY);
 	virtual int		addLine(int nX, int nY, int nH);
 	virtual int		clearLines(bool bFill);
 
+	// 查找音符
 	virtual int		fillNotes(void);
 	virtual int		searchNum(int nX, int nY, int nW, Rect * pRect);
 	virtual int		fillNumPos(void);
 
+	// 查找音符附加信息
 	virtual int		fillNoteInfo(void);
 	virtual int		getNearDotNum(int nX, int nY);
 
+	// 识别音符数字
 	virtual int		detectNum(Rect * pRect);
 
 protected:
