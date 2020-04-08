@@ -11,7 +11,7 @@
 *******************************************************************************/
 #include "CWaveOutRnd.h"
 
-CWaveOutRnd::CWaveOutRnd(void)
+CWaveOutRnd::CWaveOutRnd(HWND hWnd)
 	: m_hWaveOut (NULL)
 	, m_nDeviceID (WAVE_MAPPER)
 	, m_dwVolume (0XFF)
@@ -25,6 +25,7 @@ CWaveOutRnd::CWaveOutRnd(void)
 	, m_pPCMBuff(NULL)
 	, m_nPCMLen(0)
 {
+	m_hWnd = hWnd;
 	memset (&m_wavFormat, 0, sizeof (m_wavFormat));
 	m_nSampleRate = 0;
 	m_nChannels = 0;
@@ -312,7 +313,7 @@ int CWaveOutRnd::WaitAllBufferDone (int nWaitTime) {
 		if (m_lstFull.GetCount () == 0)
 			break;
 		Sleep (2);
-		if (GetTickCount () - nStartTime >= nWaitTime) {
+		if ((int)(GetTickCount () - nStartTime) >= nWaitTime) {
 			return nWaitTime;
 		}
 	}
@@ -364,6 +365,7 @@ bool CWaveOutRnd::AudioDone (WAVEHDR * pWaveHeader) {
 			//m_llRendTime = m_llRendTime + pWaveHeader->dwBufferLength * 1000 / m_wavFormat.nAvgBytesPerSec;
 			//if (!m_bFlushing)
 			//	m_pInst->m_pClock->SetTime (m_llRendTime);
+			PostMessage(m_hWnd, WM_USER_ARND, (WPARAM)((WAVEHDRINFO *)pWaveHeader->dwUser)->llTime, 0);
 		}
 	}
 	m_lstFull.Remove (pWaveHeader);

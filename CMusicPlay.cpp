@@ -15,7 +15,8 @@
 
 #include "CMusicPlay.h"
 
-CMusicPlay::CMusicPlay(void) {
+CMusicPlay::CMusicPlay(HWND hWnd) {
+	m_hWnd = hWnd;
 	m_pPage = NULL;
 	m_pRnd = NULL;
 	m_nOffset = 44100 * 4 * 4;
@@ -25,7 +26,7 @@ CMusicPlay::CMusicPlay(void) {
 	m_hFile = fopen("./res/yinseku.pcm", "rb");
 	testNotePlay();
 
-	m_pRnd = new CWaveOutRnd();
+	m_pRnd = new CWaveOutRnd(m_hWnd);
 	m_pRnd->Init(44100, 2);
 	m_pRnd->Start();
 }
@@ -72,7 +73,7 @@ int	CMusicPlay::PlayNote(MusicNote * pNote) {
 	if (pNote->m_nNote == 0) {
 		nOffset = 0;
 	}
-	int nNum = pow(2, 4 - pNote->m_nLength);
+	int nNum = (int)(pow(2, 4 - pNote->m_nLength));
 	nLenght = m_nStep * 4 / nNum;
 	nLenght = nLenght * 4 / 4;
 	if (nLenght > m_nStep)
@@ -83,7 +84,7 @@ int	CMusicPlay::PlayNote(MusicNote * pNote) {
 	while (nPlayLen < nLenght) {
 		nRead = fread(m_szBuff, 1, m_nBuffSize, m_hFile);
 		while (nRead > 0) {
-			nRC = m_pRnd->Render((unsigned char *)m_szBuff, nRead, 0);
+			nRC = m_pRnd->Render((unsigned char *)m_szBuff, nRead, (long long)pNote);
 			if (nRC != 0) {
 				Sleep(2);
 			}
