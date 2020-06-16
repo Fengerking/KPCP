@@ -182,7 +182,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 		case ID_FILE_PLAY: {
 			if (g_pMusicPlay == NULL) {
-				g_pMusicPlay = new CMusicPlay();
+				g_pMusicPlay = new CMusicPlay(hWnd);
 				g_pMusicPlay->SetMusicPage(&g_musicPage);
 			}
 			//g_pMusicPlay->Play();
@@ -203,14 +203,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 		if (g_posNote == NULL) {
 			KillTimer(hWnd, 1001);
+			if (g_musicNote != NULL)
+				g_musicNote->m_bPlaying = false;
+			g_musicNote = NULL;
 		}
 		else {
 			MusicNote * pNote = g_musicPage.m_lstNote.GetNext(g_posNote);
-			pNote->m_bPlaying = true;
-			g_wndResult->UpdateResult();
 			g_pMusicPlay->PlayNote(pNote);
-			g_musicNote = pNote;
 		}
+		break;
+	}
+
+	case WM_USER_ARND: {
+		MusicNote * pNote = (MusicNote *)wParam;
+		if (g_musicNote == pNote)
+			break;
+		if (g_musicNote != NULL)
+			g_musicNote->m_bPlaying = false;
+		pNote->m_bPlaying = true;
+		g_musicNote = pNote;
+		g_wndResult->UpdateResult();
 		break;
 	}
 

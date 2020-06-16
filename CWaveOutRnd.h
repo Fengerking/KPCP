@@ -18,6 +18,7 @@
 #include "CNodeList.h"
 
 #define MAXINPUTBUFFERS		3
+#define WM_USER_ARND		WM_USER+100
 
 class CWaveOutRnd
 {
@@ -31,7 +32,7 @@ public:
 	static bool CALLBACK BVEWaveOutProc(HWAVEOUT hwo, UINT uMsg, DWORD dwInstance, 
 													DWORD dwParam1, DWORD dwParam2);
 public:
-	CWaveOutRnd(void);
+	CWaveOutRnd(HWND hWnd);
 	virtual ~CWaveOutRnd(void);
 
 	virtual int		Init (int nSampleRate, int nChannels);
@@ -54,6 +55,7 @@ protected:
 	virtual bool	AudioDone (WAVEHDR * pWaveHeader);
 
 protected:
+	HWND				m_hWnd;
 	int					m_nSampleRate;
 	int					m_nChannels;
 	int					m_nOffsetTime;

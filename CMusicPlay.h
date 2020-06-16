@@ -18,7 +18,7 @@
 class CMusicPlay
 {
 public:
-	CMusicPlay(void);
+	CMusicPlay(HWND hWnd);
 	virtual ~CMusicPlay(void);
 
 	// …Ë÷√ºÚ∆◊–≈œ¢
@@ -42,6 +42,7 @@ protected:
 	int				testNotePlay(void);
 
 protected:
+	HWND			m_hWnd;
 	CMusicPage *	m_pPage;
 	CWaveOutRnd *	m_pRnd;
 
