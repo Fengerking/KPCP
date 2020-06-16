@@ -22,7 +22,14 @@ CMusicPlay::CMusicPlay(void) {
 	m_nStep = 505672;
 	m_nLowLen = m_nStep * 5;
 	m_nBuffSize = 4096;
-	m_hFile = fopen("./res/yinseku.pcm", "rb");
+	char szFile[256];
+	memset(szFile, 0, sizeof(szFile));
+	GetModuleFileName(NULL, szFile, sizeof(szFile));
+	char * pFolder = strrchr(szFile, '\\');
+	if (pFolder != NULL)
+		*pFolder = 0;
+	strcat(szFile, "\\yinseku.pcm");
+	m_hFile = fopen(szFile, "rb");
 	testNotePlay();
 
 	m_pRnd = new CWaveOutRnd();
